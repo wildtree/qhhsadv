@@ -366,7 +366,7 @@ ZSystem::load_game(int f)
 }
 
 void
-ZSystem::play_media(int n) const
+ZSystem::play_media(int n)
 {
     std::string sound_names[] = {
         "highschool", "charumera", "explosion", "in_toilet", "acid",
@@ -375,11 +375,9 @@ ZSystem::play_media(int n) const
     struct stat ss;
     if (stat(files()->mp3_file(sound_names[n]).c_str(), &ss) == 0 && S_ISREG(ss.st_mode))
     {
-        auto mp = new QMediaPlayer();
-        mp->setMedia(QUrl::fromLocalFile(files()->mp3_file(sound_names[n]).c_str()));
-        mp->setVolume(100);
-        mp->play();
-        mp->deleteLater();
+        _mp.setMedia(QUrl::fromLocalFile(files()->mp3_file(sound_names[n]).c_str()));
+        _mp.setVolume(100);
+        _mp.play();
     }
 }
 void

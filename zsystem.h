@@ -48,7 +48,7 @@ public:
     void prompt(void) const;
     void interpreter(void);
     void loop(SDL_Event &ev);
-    void play_media(int n) const;
+    void play_media(int n);
     const Files *files() const { return _files; }
 public slots:
     void parse();
@@ -57,6 +57,7 @@ public slots:
 private:
     Ui::ZSystem *ui;
     QGraphicsScene _scene;
+    QMediaPlayer _mp;
 
     Canvas *_cv;
     ZCore *_core;

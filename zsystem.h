@@ -5,6 +5,7 @@
 #include <QGraphicsScene>>
 #include <QPixmap>
 #include <QScrollBar>
+#include <QMessageBox>
 #include <QtMultimedia/QMediaPlayer>
 #include <graph.h>
 #include <zmap.h>
@@ -14,6 +15,7 @@
 #include <zobjdata.h>
 #include <files.h>
 #include <dialog.h>
+#include <prefs.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
@@ -54,6 +56,8 @@ public slots:
     void parse();
     void title();
     void start();
+    void about();
+    void help();
 private:
     Ui::ZSystem *ui;
     QGraphicsScene _scene;
@@ -68,6 +72,7 @@ private:
     ZMessage *_msg;
     ZRules *_rules;
     Files *_files;
+    Prefs *_prefs;
 
     static const std::string _credit[];
     enum Mode {

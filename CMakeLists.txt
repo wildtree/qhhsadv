@@ -49,6 +49,8 @@ set(PROJECT_SOURCES
         files.h
         dialog.h
         dialog.cpp
+        prefs.h
+        prefs.cpp
         ${TS_FILES}
 )
 

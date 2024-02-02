@@ -3,6 +3,7 @@
 //
 
 #include <string>
+#include <sys/stat.h>
 
 #if !defined(FILES_H)
 #define FILES_H
@@ -26,8 +27,12 @@ public:
     std::string mesg_file() const { return base_dir() + "/.HHSAdv/msg.dat"; }
     std::string user_file(int i) const { return base_dir() + "/.HHSAdv/" + std::to_string(i) + ".dat"; }
     std::string mp3_file(const std::string &s) const { return base_dir() + "/.HHSAdv/" + s + ".mp3"; }
+    std::string icon_file() const { return base_dir() + "/.HHSAdv/icon.png"; }
+    std::string prefs_file() const { return base_dir() + "/.HHSAdv/prefs.dat"; }
 
     std::string font_file() const { return "/usr/share/fonts/truetype/fonts-japanese-gothic.ttf";}
+
+    bool exists(std::string f) const { struct stat ss; return stat(f.c_str(), &ss) == 0 && S_ISREG(ss.st_mode); }
 };
 
 #endif

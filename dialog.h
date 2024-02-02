@@ -13,6 +13,10 @@
 #include <QLabel>
 #include <QPushButton>
 #include <QVariant>
+#include <QScrollArea>
+#include <QGraphicsView>
+#include <QMessageBox>
+#include <QGridLayout>
 
 class Dialog : public QObject
 {
@@ -49,6 +53,25 @@ public:
     static const int FontWidth = 8;
 public slots:
     void exitDialog();
+};
+
+class ScrollMessageBox : public QMessageBox
+{
+    Q_OBJECT
+
+public:
+    ScrollMessageBox(QWidget *parent = nullptr) : QMessageBox(parent) { init(""); }
+    ScrollMessageBox(QMessageBox::Icon icon, const QString &title, const QString &text, QMessageBox::StandardButtons buttons = NoButton, QWidget *parent = nullptr, Qt::WindowFlags f = Qt::Dialog|Qt::MSWindowsFixedSizeDialogHint);
+    ~ScrollMessageBox() {}
+
+    static void about(QWidget *parent, const QString &title, const QString &text);
+public slots:
+private:
+    QScrollArea *_scrollArea;
+    QWidget *_content;
+    QVBoxLayout *_vbox;
+
+    void init(const QString &text);
 };
 
 #endif

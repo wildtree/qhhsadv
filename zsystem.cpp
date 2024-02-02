@@ -18,11 +18,20 @@ ZSystem::ZSystem(QWidget *parent)
     _files = new Files();
     _files->base_dir(getenv("HOME"));
     _core = new ZCore();
+    _prefs = new Prefs();
+
+    _prefs->setPrefsFilename(_files->prefs_file());
+    if (_files->exists(_files->prefs_file())) _prefs->load();
 
     ui->_gv->setScene(&_scene);
     QObject::connect(ui->_le, SIGNAL(editingFinished()), this, SLOT(parse()));
     QObject::connect(ui->_btnStart, SIGNAL(clicked()), this, SLOT(start()));
     QObject::connect(ui->_btnTitle, SIGNAL(clicked()), this, SLOT(title()));
+
+    QObject::connect(ui->action_Q, SIGNAL(triggered()), this, SLOT(close()));
+    QObject::connect(ui->action_2, SIGNAL(triggered()), this, SLOT(help()));
+    QObject::connect(ui->action_4, SIGNAL(triggered()), this, SLOT(about()));
+    QObject::connect(ui->action_P, SIGNAL(triggered()), _prefs, SLOT(dialog()));
 }
 
 ZSystem::~ZSystem()
@@ -34,6 +43,7 @@ ZSystem::~ZSystem()
     if (_msg) delete _msg;
     if (_rules) delete _rules;
 
+    delete _prefs;
     delete _core;
     delete _files;
     delete _cv;
@@ -371,6 +381,7 @@ ZSystem::play_media(int n)
     std::string sound_names[] = {
         "highschool", "charumera", "explosion", "in_toilet", "acid",
     };
+    if (!_prefs->getSound()) return;
     if (n < 0 || n > 4) return;
     struct stat ss;
     if (stat(files()->mp3_file(sound_names[n]).c_str(), &ss) == 0 && S_ISREG(ss.st_mode))
@@ -593,4 +604,82 @@ ZSystem::start()
     _core->mapId(1);
     draw_screen(true);
     _mode = Play;
+}
+
+void
+ZSystem::about()
+{
+    ScrollMessageBox::about(this, "このゲームについて",
+                           "<h3>ハイハイスクールアドベンチャー</h3>"
+                           "<p>"
+                           "&nbsp;PalmOS version: hiro © 2002-2004<br/>"
+                           "&nbsp;Android version: hiro © 2011-2024<br/>"
+                           "&nbsp;M5 version: hiro © 2023-2024<br/>"
+                           "&nbsp;Qt version: hiro © 2024<br/>"
+                           "</p><p>"
+                           "<b>Project ZOBPlus</b><br/>"
+                           "&nbsp;Hayami &lt;hayami@zob.jp&gt;<br/>"
+                           "&nbsp;Exit &lt;exit@zob.jp&gt;<br/>"
+                           "&nbsp;ezumi &lt;ezumi@zob.jp&gt;<br/>"
+                           "&nbsp;Ogu &lt;ogu@zob.jp&gt;<br/>"
+                           "&nbsp;neopara &lt;neopara@zob.jp&gt;<br/>"
+                           "&nbsp;hiro &lt;hiro@zob.jp&gt;<br/>"
+                           "</p><p>"
+                           "<b>--- Original Staff ---</b><br/>"
+                           "<b>Directed By HIRONOBU NAKAGUCHI</b><br/>"
+                           "<b>Graphic Designers:</b><br/>"
+                           "<table boder=0><tr>"
+                           "<td>NOBUKO YANAGITA</td>"
+                           "<td>YUMIKO HOSONO</td>"
+                           "<td>HIRONOBU NAKAGUCHI</td>"
+                           "<td>TOSHIHIKO YANAGITA</td>"
+                           "<td>TOHRU OHYAMA</td>"
+                           "</tr><tr>"
+                           "<td>MASANORI ISHII</td>"
+                           "<td>YASUSHI SHIGEHARA</td>"
+                           "<td>HIDETOSHI SUZUKI</td>"
+                           "<td>TATSUYA UCHIBORI</td>"
+                           "<td>MASAKI NOZAWA</td>"
+                           "</tr><tr>"
+                           "<td>TOMOKO OHKAWA</td>"
+                           "<td>FUMIKAZU SHIRATSUCHI</td>"
+                           "<td>YASUNORI YAMADA</td>"
+                           "<td>MUNENORI TAKIMOTO</td>"
+                           "<td/>"
+                           "</tr></table>"
+                           "<b>Message Converters:</b><br/>"
+                           "<table boder=0><tr>"
+                           "<td>TATSUYA UCHIBORI</td>"
+                           "<td>HIDETOSHI SUZUKI</td>"
+                           "<td>YASUSHI SHIGEHARA</td>"
+                           "<td>YASUNORI YAMADA</td>"
+                           "</tr></table>"
+                           "<b>Floppy Disk Converters:</b><br/>"
+                           "&nbsp;HIRONOBU NAKAGUCHI<br/>"
+                           "<b>Music:</b><br/>"
+                           "&nbsp;MASAO MIZOBE<br/>"
+                           "<b>Special Thanks To:</b><br/>"
+                           "&nbsp;HIROSHI YAMAMOTO<br/>"
+                           "&nbsp;TAKAYOSHI KASHIWAGI<br/>"
+                           "<b>Cooperate with:</b><br/>"
+                           "&nbsp;Furniture KASHIWAGI<br/>"
+                           "<h4>ZAMA HIGH SCHOOL MICRO COMPUTER CIRCLE</h4>"
+                           );
+}
+
+void
+ZSystem::help()
+{
+
+    QMessageBox::about(this, "ストーリー",
+                "<p>2019年神奈山県立ハイ高等学校は地盤が弱く校舎の老朽化も進んだため、とうとう廃校にする以外方法がなくなってしまった。</p>"
+                "<p>ところで大変な情報を手に入れた。<br/>"
+                "それは、<br/><center>「ハイ高校にＡＴＯＭＩＣ ＢＯＭＢが仕掛けられている。」</center><br/>と、いうものだ。</p>"
+                "<p>どうやらハイ高が廃校になった時、気が狂った理科の先生がＡＴＯＭＩＣ ＢＯＭＢを、学校のどこかに仕掛けてしまったらしい。</p>"
+                "<p>お願いだ。我が母校のコナゴナになった姿を見たくはない。<br/>"
+                "早くＡＴＯＭＩＣ ＢＯＭＢを取り除いてくれ……！！</p>"
+                "<p>行動は英語で、&quot;&lt;動詞&gt;&quot;或いは、&quot;&lt;動詞&gt;&quot;+&quot;&lt;目的語&gt;&quot;のように入れていただきたい。<br/>"
+                "例えば、&quot;look room&quot;と入れれば部屋の様子を見ることが出来るという訳だ。</p>"
+                "<p>それでは Ｇｏｏｄ Ｌｕｃｋ！！！............</p>"
+    );
 }

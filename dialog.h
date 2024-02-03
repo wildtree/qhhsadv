@@ -68,8 +68,6 @@ public:
 public slots:
 private:
     QScrollArea *_scrollArea;
-    QWidget *_content;
-    QVBoxLayout *_vbox;
 
     void init(const QString &text);
 };

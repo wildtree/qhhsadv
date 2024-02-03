@@ -23,6 +23,11 @@ ZSystem::ZSystem(QWidget *parent)
     _prefs->setPrefsFilename(_files->prefs_file());
     if (_files->exists(_files->prefs_file())) _prefs->load();
 
+    if(_files->exists(_files->icon_file()))
+    {
+        this->setWindowIcon(QIcon(QPixmap(_files->icon_file().c_str())));
+    }
+
     ui->_gv->setScene(&_scene);
     QObject::connect(ui->_le, SIGNAL(editingFinished()), this, SLOT(parse()));
     QObject::connect(ui->_btnStart, SIGNAL(clicked()), this, SLOT(start()));

@@ -100,11 +100,8 @@ Dialog::exitDialog()
 }
 
 ScrollMessageBox::ScrollMessageBox(QMessageBox::Icon icon, const QString &title, const QString &text, QMessageBox::StandardButtons buttons, QWidget *parent, Qt::WindowFlags f)
-    :QMessageBox(icon, title, "", buttons, parent, f)
+    :QMessageBox(icon, title, text, buttons, parent, f)
 {
-    //this->setIcon(icon);
-    //this->setWindowTitle(title);
-    //if (buttons != NoButton) this->setStandardButtons(buttons);
     this->init(text);
 }
 
@@ -113,22 +110,23 @@ ScrollMessageBox::init(const QString &text)
 {
     _scrollArea = new QScrollArea(this);
     _scrollArea->setWidgetResizable(true);
-    _content = new QWidget();
-    _scrollArea->setWidget(_content);
-    _vbox = new QVBoxLayout(_content);
-    QLabel *t = new QLabel(text);
-    t->setWordWrap(true);
-    t->setAlignment(Qt::AlignLeft|Qt::AlignVCenter);
-    t->setOpenExternalLinks(true);
-    _vbox->addWidget(t);
-    QGridLayout *l = static_cast<QGridLayout*>(this->layout());
-    l->addWidget(_scrollArea,0,1,1,l->columnCount());
-    this->setStyleSheet("QScrollArea{min-width: 800 px; min-height: 480 px; } QLabel{min-width: 800 px; min-height: 480 px;}");
+    QGridLayout *l = qobject_cast<QGridLayout*>(this->layout());
+    QLabel *label = this->findChild<QLabel*>("qt_msgbox_label");
+    QLabel *iconLabel = this->findChild<QLabel*>("qt_msgboxex_icon_label");
+    label->setWordWrap(true);
+    label->setOpenExternalLinks(true);
+    _scrollArea->setWidget(label);
+    l->addWidget(_scrollArea, 0, iconLabel->isHidden() ? 1 : 2, 1, 1);
 }
 
 void
 ScrollMessageBox::about(QWidget *parent, const QString &title, const QString &text)
 {
     ScrollMessageBox *scrBox = new ScrollMessageBox(QMessageBox::Icon::Information, title, text, QMessageBox::StandardButton::Ok, parent);
+    scrBox->setAttribute(Qt::WA_DeleteOnClose);
+    QIcon icon = scrBox->windowIcon();
+    QSize size = icon.actualSize(QSize(64, 64));
+    scrBox->setIconPixmap(icon.pixmap(size));
+
     scrBox->exec();
 }

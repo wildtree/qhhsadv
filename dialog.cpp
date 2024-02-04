@@ -108,15 +108,24 @@ ScrollMessageBox::ScrollMessageBox(QMessageBox::Icon icon, const QString &title,
 void
 ScrollMessageBox::init(const QString &text)
 {
-    _scrollArea = new QScrollArea(this);
-    _scrollArea->setWidgetResizable(true);
     QGridLayout *l = qobject_cast<QGridLayout*>(this->layout());
     QLabel *label = this->findChild<QLabel*>("qt_msgbox_label");
     QLabel *iconLabel = this->findChild<QLabel*>("qt_msgboxex_icon_label");
-    label->setWordWrap(true);
-    label->setOpenExternalLinks(true);
-    _scrollArea->setWidget(label);
-    l->addWidget(_scrollArea, 0, iconLabel->isHidden() ? 1 : 2, 1, 1);
+    QLabel *content = new QLabel(label->text());
+    label->clear();
+    label->hide();
+    content->setWordWrap(true);
+    content->setOpenExternalLinks(true);
+    QVBoxLayout *vbox = new QVBoxLayout(label);
+    vbox->addWidget(content);
+    _scrollArea = new QScrollArea(label);
+    _scrollArea->setWidgetResizable(true);
+    _scrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+    _scrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
+    _scrollArea->setMinimumSize(label->width(),label->height());
+    label->setMinimumSize(label->width(),label->height());
+    label->show();
+    content->show();
 }
 
 void

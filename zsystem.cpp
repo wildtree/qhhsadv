@@ -384,10 +384,10 @@ void
 ZSystem::play_media(int n)
 {
     std::string sound_names[] = {
-        "highschool", "charumera", "explosion", "in_toilet", "acid",
+        "highschool", "charumera", "explosion", "",  "in_toilet", "acid",
     };
     if (!_prefs->getSound()) return;
-    if (n < 0 || n > 4) return;
+    if (n < 0 || n > 5) return;
     struct stat ss;
     if (stat(files()->mp3_file(sound_names[n]).c_str(), &ss) == 0 && S_ISREG(ss.st_mode))
     {

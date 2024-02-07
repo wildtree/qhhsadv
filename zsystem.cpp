@@ -391,9 +391,16 @@ ZSystem::play_media(int n)
     struct stat ss;
     if (stat(files()->mp3_file(sound_names[n]).c_str(), &ss) == 0 && S_ISREG(ss.st_mode))
     {
+#if QT_VERSION < QT_VERSION_CHECK(6,0,0)
         _mp.setMedia(QUrl::fromLocalFile(files()->mp3_file(sound_names[n]).c_str()));
         _mp.setVolume(100);
         _mp.play();
+#else
+        _mp.setAudioOutput(&_audio);
+        _mp.setSource(QUrl::fromLocalFile(files()->mp3_file(sound_names[n]).c_str()));
+        _audio.setVolume(100);
+        _mp.play();
+#endif
     }
 }
 void

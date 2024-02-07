@@ -7,6 +7,9 @@
 #include <QScrollBar>
 #include <QMessageBox>
 #include <QtMultimedia/QMediaPlayer>
+#if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
+#include <QtMultimedia/QAudioOutput>
+#endif
 #include <graph.h>
 #include <zmap.h>
 #include <zwords.h>
@@ -62,6 +65,9 @@ private:
     Ui::ZSystem *ui;
     QGraphicsScene _scene;
     QMediaPlayer _mp;
+#if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
+    QAudioOutput _audio;
+#endif
 
     Canvas *_cv;
     ZCore *_core;

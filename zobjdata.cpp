@@ -144,7 +144,7 @@ ZTeacherData::draw(Canvas *cv, bool offset)
     for(int k = 0 ; r2[k + 1] != 0 ; k += 2)
     {
         x0 = r2[k];
-        uint16_t c = 0xfa95; // { 255, 192, 192 }
+        uint16_t c = 0xf5f3; // { 244, 190, 155 }
         for (int j = 0 ; j < r2[k + 1] ; j += 2)
         {
             y0 = (int)(_v[i++] & 0xff);

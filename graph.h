@@ -51,7 +51,7 @@ public:
     static const uint16_t CYAN    = 0x07ff;
     static const uint16_t YELLOW  = 0xffe0;
     static const uint16_t WHITE   = 0xffff;
-    static const uint16_t MAROON  = 0x7800; 
+    static const uint16_t MAROON  = 0x7800;
 };
 
 class Point

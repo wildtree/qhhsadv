@@ -2,7 +2,7 @@
 #define ZSYSTEM_H
 
 #include <QMainWindow>
-#include <QGraphicsScene>>
+#include <QGraphicsScene>
 #include <QPixmap>
 #include <QScrollBar>
 #include <QMessageBox>

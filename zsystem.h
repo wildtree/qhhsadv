@@ -55,6 +55,7 @@ public:
     void loop(SDL_Event &ev);
     void play_media(int n);
     const Files *files() const { return _files; }
+    void applyTheme(bool dark);
 public slots:
     void parse();
     void title();

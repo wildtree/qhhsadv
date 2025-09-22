@@ -1,9 +1,10 @@
 #include "zsystem.h"
 #include "./ui_zsystem.h"
+#include <QFile>
 
 const std::string ZSystem::_credit[] = {
     "ハイハイスクールアドベンチャー",
-    "Copyright(c)1995-2024",
+    "Copyright(c)1995-2025",
     "ZOBplus",
     "hiro"
 };
@@ -694,4 +695,16 @@ ZSystem::help()
                 "例えば、&quot;look room&quot;と入れれば部屋の様子を見ることが出来るという訳だ。</p>"
                 "<p>それでは Ｇｏｏｄ Ｌｕｃｋ！！！............</p>"
     );
+}
+
+void
+ZSystem::applyTheme(bool dark)
+{
+    QString fileName = QString(files()->theme_file(dark).c_str());
+    QFile f(fileName);
+    if (f.open(QFile::ReadOnly))
+    {
+        QString style = QLatin1String(f.readAll());
+        qApp->setStyleSheet(style);
+    }
 }

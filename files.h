@@ -32,6 +32,8 @@ public:
 
     std::string font_file() const { return "/usr/share/fonts/truetype/fonts-japanese-gothic.ttf";}
 
+    std::string theme_file(bool dark) const { return dark ? base_dir() + "/.HHSAdv/hemes/dark.qss" : base_dir() + "/.HSAdv/emes/light.qss";}
+
     bool exists(std::string f) const { struct stat ss; return stat(f.c_str(), &ss) == 0 && S_ISREG(ss.st_mode); }
 };
 

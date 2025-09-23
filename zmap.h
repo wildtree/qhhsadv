@@ -6,7 +6,6 @@
 #define ZMAP_H
 
 #include <sys/types.h>
-#include <SDL2/SDL.h>
 #include <graph.h>
 #include <string>
 

@@ -3,6 +3,7 @@
  */
 
 #include <zmap.h>
+#include <QFile>
 
 const static std::string _emptyString = std::string();
 
@@ -22,15 +23,19 @@ ZMapData::ZMapData(const uint8_t *b)
     memcpy(_v, b, vectorSize);
     int m = vectorSize + relationSize;
     int n = 0;
-    std::string msg[maxMapElements];
+    std::vector<std::string> msg(maxMapElements);
+    //std::string msg[maxMapElements];
     for (n = 0 ; m < fileBlockSize ; n++)
     {
         int len = ((int)(b[m++] & 0xff) << 8)|(int)(b[m++] & 0xff);
         if (len == 0) break;
-        char bmsg[len+1];
-        memcpy(bmsg, &b[m], len);
+        std::vector<char> bmsg(len + 1);
+        for(int i = 0; i < len; i++) bmsg[i] = b[m + i];
+        //char bmsg[len+1];
+        //memcpy(bmsg, &b[m], len);
         bmsg[len] = 0;
-        msg[n] = std::string(bmsg);
+        msg[n] = std::string(bmsg.data());
+        //msg[n] = std::string(bmsg);
         m += len;
     }
     _m = msg[0];
@@ -189,16 +194,13 @@ ZMapRoot::curMapData()
 {
     if(_p != _l)
     {
-        //Serial.printf("loading map id=%d\r\n", _p);
-        FILE *fp = fopen(_file.c_str(), "r");
-        //Serial.printf("'%s' is opened\r\n", _file);
-        uint8_t *buf = new uint8_t [fileBlockSize];
-        //Serial.printf("buffer is allocated: %08x\r\n", buf);
-        fseek(fp, _p * fileBlockSize, SEEK_SET);
-        //Serial.printf("file pointer is moved to: %08x\r\n", _p * fileBlockSize);
-        if (!feof(fp))
+        QFile fi(_file.c_str());
+        if (fi.open(QIODevice::ReadOnly))
         {
-            fread((char*)buf, fileBlockSize, 1, fp);
+            uint8_t* buf = new uint8_t [fileBlockSize];
+            fi.seek(_p * fileBlockSize);
+            fi.read(reinterpret_cast<char*>(buf), fileBlockSize);
+            fi.close();
             if (_map != nullptr) delete _map;
             _map = new ZMapData(buf);
             if (_p == 0 || _p == 84 || _p == 85)
@@ -207,31 +209,35 @@ ZMapRoot::curMapData()
                 // _map.setBlank(msg[0x4c]);
             }
             _l = _p;
+            delete [] buf;
         }
-        delete [] buf;
-        fclose(fp);
+
     }
     return *_map;
 }
 
 ZMessage::ZMessage(const std::string &file)
 {
-    FILE *fp = fopen(file.c_str(), "r");
+    QFile fi(file.c_str());
     int i = 0;
-    uint8_t c;
-    std::string tmp = std::string();
-    while (!feof(fp))
+    if (fi.open(QIODevice::ReadOnly))
     {
-        fread((char*)&c, 1, 1, fp);
-        if (c == 0)
+        char c;
+        std::string tmp = std::string();
+        while(true)
         {
-            _msgs[i++] = std::string(tmp);
-            tmp = std::string();
-            continue;
+            if (fi.read(&c, 1) == 0) break;
+            if (c == 0)
+            {
+                _msgs[i++] = std::string(tmp);
+                tmp = std::string();
+                continue;
+            }
+            tmp += c;
         }
-        tmp += (char)c;
+        fi.close();
     }
-    fclose(fp);
+
     while (i < ZMessage::MAX_MESSAGE)
     {
         _msgs[i++] = std::string();

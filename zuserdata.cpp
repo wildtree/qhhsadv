@@ -3,6 +3,7 @@
  */
 
 #include <zuserdata.h>
+#include <QFile>
 
 const int ZUserData::links = 87;
 const int ZUserData::items = 12;
@@ -38,6 +39,13 @@ ZMapLink::ZMapLink(const uint8_t b[])
 ZMapLink::ZMapLink(const ZMapLink &x)
 {
     memcpy(_link.l, x._link.l, sizeof(_link));
+}
+
+ZMapLink
+&ZMapLink::operator =(const uint8_t b[])
+{
+    memcpy(_link.l, b, sizeof(_link));
+    return *this;
 }
 
 void
@@ -86,26 +94,22 @@ ZUserData::~ZUserData()
 void
 ZUserData::init(const std::string &file)
 {
-    FILE *fp = fopen(file.c_str(), "r");
-    uint8_t *buf = new uint8_t [sizeof(ZMapLink)];
-    for (int i = 0 ; i < links ; i++)
+    QFile fi(file.c_str());
+    if (fi.open(QIODevice::ReadOnly))
     {
-        if (feof(fp)) break;
-        fread((char*)buf, sizeof(ZMapLink),1,fp);
-        _map[i] = ZMapLink(buf);
+        uint8_t *buf = new uint8_t [sizeof(ZMapLink)];
+        for (int i = 0 ; i < links ; i++)
+        {
+            if (fi.read(reinterpret_cast<char*>(buf), sizeof(ZMapLink)) < sizeof(ZMapLink)) break;
+            _map[i] = buf;
+        }
+        delete[] buf;
+        fi.seek(0x301);
+        fi.read(reinterpret_cast<char*>(_places), items);
+        fi.seek(0x311);
+        fi.read(reinterpret_cast<char*>(_flags), flags);
+        fi.close();
     }
-    if (!feof(fp))
-    {
-        fseek(fp, 0x301, SEEK_SET); // top of item places
-        fread((char*)_places, items,1,fp);
-    }
-    if (!feof(fp))
-    {
-        fseek(fp, 0x311, SEEK_SET); // top of flags
-        fread((char*)_flags, flags, 1, fp);
-    }
-    delete[] buf;
-    fclose(fp);
 }
 
 void

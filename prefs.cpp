@@ -1,9 +1,16 @@
 
 #include <prefs.h>
 #include <iostream>
+#include <QtCore>
 #include <QLabel>
 #include <QRadioButton>
 #include <QButtonGroup>
+#include <QtCore/qglobal.h>
+#include <QFile>
+#include <QJsonDocument>
+#include <QJsonObject>
+
+
 void
 Prefs::dialog()
 {
@@ -12,19 +19,27 @@ Prefs::dialog()
     chkSound->setChecked(_sound);
     QObject::connect(chkSound, SIGNAL(stateChanged(int)), this, SLOT(setSound(int)));
 
-    QFormLayout *form = new QFormLayout();
-    form->setLabelAlignment(Qt::AlignLeft);
-    form->addRow("音を鳴らす", chkSound);
+    QCheckBox *chkSkipOpening = new QCheckBox();
+    chkSkipOpening->setChecked(_skip_opening);
+    QObject::connect(chkSkipOpening, SIGNAL(stateChanged(int)), this, SLOT(setSkipOpening(int)));
+
+    QFormLayout *form0 = new QFormLayout();
+    form0->setLabelAlignment(Qt::AlignLeft);
+    form0->addRow("音を鳴らす", chkSound);
+
+    QFormLayout *form1 = new QFormLayout();
+    form1->setLabelAlignment(Qt::AlignLeft);
+    form1->addRow("オープニングを飛ばす", chkSkipOpening);
 
     QLabel *label = new QLabel("テーマ");
     QRadioButton *light = new QRadioButton("ライト");
     QRadioButton *dark  = new QRadioButton("ダーク");
-    QRadioButton *sys   = new QRadioButton("システm");
+    QRadioButton *sys   = new QRadioButton("システム");
     QRadioButton *defchk = sys;
     switch(_theme_type)
     {
-    case Light: defchk = light; break;
-    case Dark:  defchk = dark; break;
+    case ThemeType::Light: defchk = light; break;
+    case ThemeType::Dark:  defchk = dark; break;
     }
     defchk->setChecked(true);
 
@@ -32,7 +47,7 @@ Prefs::dialog()
     group->addButton(light, 0);
     group->addButton(dark, 1);
     group->addButton(sys, 2);
-    QObject::connect(group, QOverload<int>::of(&QButtonGroup::buttonClicked), this, [=](int id)
+    QObject::connect(group, &QButtonGroup::idClicked, this, [=](int id)
     {
         setThemeType(id);
     });
@@ -48,7 +63,8 @@ Prefs::dialog()
     bbox->button(QDialogButtonBox::Ok)->setText("了解");
 
     QVBoxLayout *vbox = new QVBoxLayout(&dlg);
-    vbox->addLayout(form);
+    vbox->addLayout(form0);
+    vbox->addLayout(form1);
     vbox->addLayout(hbox);
     vbox->addWidget(bbox);
 
@@ -64,33 +80,41 @@ Prefs::dialog()
 void
 Prefs::load()
 {
-    std::ifstream fi(_f);
-    if(fi.fail()) return;
-    while(!fi.eof())
-    {
-        std::string key, value;
-        fi >> key >> value;
-//        std::cerr << "(key, value) = (" << key << "," << value << ")" << std::endl;
-        if (key == "sound:")
-        {
-            setSound(value == "true");
-        }
-        if (key == "theme:")
-        {
-            ThemeType t = System;
-            if (value == "light") t = Light;
-            if (value == "dark") t = Dark;
-            setThemeType(t);
-        }
-    }
+    QFile f(_f.c_str());
+    if (!f.open(QIODevice::ReadOnly|QIODevice::Text)) return;
+    QByteArray data = f.readAll();
+    f.close();
+
+    QJsonDocument doc = QJsonDocument::fromJson(data);
+    if (!doc.isObject()) return;
+
+    QJsonObject root = doc.object();
+    setSound(root.value("sound").toBool(true));
+    std::string theme = root.value("theme").toString().toStdString();
+    if (theme == "light") setThemeType(ThemeType::Light);
+    else if (theme == "dark") setThemeType(ThemeType::Dark);
+    else setThemeType(ThemeType::System);
 }
 
 void
 Prefs::save() const
 {
-    std::ofstream fo(_f);
-    if (fo.fail()) return;
-    fo << "sound: " << ((getSound()) ? "true" : "false") << std::endl;
-    const std::string theme_type[] = { "light", "dark", "system" };
-    fo << "theme:" << theme_type[_theme_type] << std::endl;
+    QJsonObject root;
+    root["sound"] = getSound();
+    switch(getThemeType())
+    {
+    case ThemeType::Light:
+        root["theme"] = "light";
+        break;
+    case ThemeType::Dark:
+        root["theme"] = "dark";
+        break;
+    default:
+        root["theme"] = "system";
+    }
+    QJsonDocument doc(root);
+    QFile f(_f.c_str());
+    if (!f.open(QIODevice::WriteOnly|QIODevice::Text)) return;
+    f.write(doc.toJson(QJsonDocument::Indented));
+    f.close();
 }

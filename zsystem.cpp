@@ -1,6 +1,13 @@
 #include "zsystem.h"
 #include "./ui_zsystem.h"
 #include <QFile>
+#include <qstylehints.h>
+#if QT_VERSION >=QT_VERSION_CHECK(6,5,0)
+#include <QStyleHints>
+#endif
+#include <QStandardPaths>
+#include <QRandomGenerator>
+#include "ZCreditRoll.h"
 
 const std::string ZSystem::_credit[] = {
     "ハイハイスクールアドベンチャー",
@@ -9,17 +16,111 @@ const std::string ZSystem::_credit[] = {
     "hiro"
 };
 
+const QString opening_credit = R"(<center><h3>ストーリー</h3></center>
+                               <font size="2">
+                               <p>2019年神奈山県立ハイ高等学校は地盤が弱く校舎の老朽化も進んだため、とうとう廃校にする以外方法がなくなってしまった。</p>
+                               <p>ところで大変な情報を手に入れた。<br/>
+                               それは、<br/><center>「ハイ高校にＡＴＯＭＩＣ ＢＯＭＢが仕掛けられている。」</center><br/>と、いうものだ。</p>
+                               <p>どうやらハイ高が廃校になった時、気が狂った理科の先生がＡＴＯＭＩＣ ＢＯＭＢを、学校のどこかに仕掛けてしまったらしい。</p>
+                               <p>お願いだ。我が母校のコナゴナになった姿を見たくはない。<br/>
+                               早くＡＴＯＭＩＣ ＢＯＭＢを取り除いてくれ……！！</p>
+                               <p>行動は英語で、&quot;&lt;動詞&gt;&quot;或いは、&quot;&lt;動詞&gt;&quot;+&quot;&lt;目的語&gt;&quot;のように入れていただきたい。<br/>
+                               例えば、&quot;look room&quot;と入れれば部屋の様子を見ることが出来るという訳だ。</p>
+                               <p>それでは Ｇｏｏｄ Ｌｕｃｋ！！！............</p></font>)";
+
+const QString ending_credit = R"(<<center><font size="2"><b>High High School Adventure</b>
+<br />
+PalmOS version: hiro © 2002-2004<br />
+Android version: hiro © 2011-2025<br />
+M5 version: hiro © 2023-2025<br />
+Qt version: hiro © 2024<br />
+PicoCalc version: hiro © 2025<br />
+SDL version: hiro © 2025<br />
+Windows version: hiro © 2025<br />
+<br />
+<b>- Project ZOBPlus -</b><br />
+Hayami &lt;hayami@zob.jp&gt;<br />
+Exit &lt;exit@zob.jp&gt;<br />
+ezumi &lt;ezumi@zob.jp&gt;<br />
+Ogu &lt;ogu@zob.jp&gt;<br />
+neopara &lt;neopara@zob.jp&gt;<br />
+hiro &lt;hiro@zob.jp&gt;<br />
+<br />
+<b>--- Original Staff ---</b><br />
+<br />
+<b>- Director -</b><br />
+HIRONOBU NAKAGUCHI<br />
+<br />
+<b>- Graphic Designers -</b><br />
+<br />
+NOBUKO YANAGITA<br />
+YUMIKO HOSONO<br />
+HIRONOBU NAKAGUCHI<br />
+TOSHIHIKO YANAGITA<br />
+TOHRU OHYAMA<br />
+<br />
+MASANORI ISHII<br />
+YASUSHI SHIGEHARA<br />
+HIDETOSHI SUZUKI<br />
+TATSUYA UCHIBORI<br />
+MASAKI NOZAWA<br />
+<br />
+TOMOKO OHKAWA<br />
+FUMIKAZU SHIRATSUCHI<br />
+YASUNORI YAMADA<br />
+MUNENORI TAKIMOTO<br />
+<br />
+<b>- Message Converters -</b><br />
+TATSUYA UCHIBORI<br />
+HIDETOSHI SUZUKI<br />
+YASUSHI SHIGEHARA<br />
+YASUNORI YAMADA<br />
+<br />
+<b>- Floppy Disk Converters -</b><br />
+HIRONOBU NAKAGUCHI<br />
+<br />
+<b>- Music -</b><br />
+MASAO MIZOBE<br />
+<br />
+<b>- Special Thanks To -</b><br />
+HIROSHI YAMAMOTO<br />
+TAKAYOSHI KASHIWAGI<br />
+<br />
+<b>- Cooperate with -</b><br />
+Furniture KASHIWAGI<br />
+<br />
+ZAMA HIGH SCHOOL MICRO COMPUTER CIRCLE</font></center>)";
+
 ZSystem::ZSystem(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::ZSystem)
     , _core(nullptr), _dict(nullptr), _zmap(nullptr), _obj(nullptr), _user(nullptr), _msg(nullptr), _rules(nullptr)
 {
     ui->setupUi(this);
+    QCoreApplication::setOrganizationName("WildTreeJP");
+    QCoreApplication::setApplicationName("QHHSAdv");
+
+    QString path = QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation);
+
     _cv = new Canvas(0, 0, ui->_gv->width(), ui->_gv->height());
     _files = new Files();
-    _files->base_dir(getenv("HOME"));
+    _files->base_dir(path.toStdString());
     _core = new ZCore();
     _prefs = new Prefs();
+    _prefs->setThemeHandler([this](ThemeType theme){
+        bool dark = false;
+        if (theme == ThemeType::System)
+        {
+#if QT_VERSION >= QT_VERSION_CHECK(6,5,0)
+            dark = qApp->styleHints()->colorScheme() == Qt::ColorScheme::Dark;
+#endif
+        }
+        else
+        {
+            dark = (theme == ThemeType::Dark);
+        }
+        this->applyTheme(dark);
+    });
 
     _prefs->setPrefsFilename(_files->prefs_file());
     if (_files->exists(_files->prefs_file())) _prefs->load();
@@ -38,6 +139,10 @@ ZSystem::ZSystem(QWidget *parent)
     QObject::connect(ui->action_2, SIGNAL(triggered()), this, SLOT(help()));
     QObject::connect(ui->action_4, SIGNAL(triggered()), this, SLOT(about()));
     QObject::connect(ui->action_P, SIGNAL(triggered()), _prefs, SLOT(dialog()));
+
+    ui->_btnStart->setMinimumHeight(48);
+    ui->_btnTitle->setMinimumHeight(48);
+    ui->_prompt->setMinimumHeight(48);
 }
 
 ZSystem::~ZSystem()
@@ -226,7 +331,8 @@ ZSystem::check_teacher(void)
 {
   if (_mode == GameOver || _user->getFact(1) == _core->mapId()) return;
   int rd = 100 + _core->mapId() + ((_user->getFact(1) > 0) ? 1000 : 0);
-  int rz = random() / 715827; // [0,3000) random number
+  //int rz = random() / 715827; // [0,3000) random number
+  int rz = QRandomGenerator::global()->bounded(3000); // [0,3000) random number
   _user->setFact(1, (rd < rz) ? 0 : _core->mapId());
   switch (_core->mapId())
   {
@@ -357,28 +463,30 @@ void
 ZSystem::save_game(int f)
 {
     const std::string filename = files()->user_file(f);
-    FILE *fp = fopen(filename.c_str(), "w");
-    fwrite(_core->pack(), 1, ZCore::packed_size, fp);
-    fwrite(_user->pack(), 1, ZUserData::packed_size, fp);
-    fclose(fp);
+    QFile fo(filename.c_str());
+    if (fo.open(QIODevice::WriteOnly))
+    {
+        fo.write(reinterpret_cast<const char*>(_core->pack()), ZCore::packed_size);
+        fo.write(reinterpret_cast<const char*>(_user->pack()), ZUserData::packed_size);
+        fo.close();
+    }
 }
 
 void
 ZSystem::load_game(int f)
 {
     const std::string filename = files()->user_file(f);
-    uint8_t *buf = new uint8_t [std::max(ZCore::packed_size, ZUserData::packed_size)];
-    FILE *fp = fopen(filename.c_str(), "r");
-    if (fread(buf, 1, ZCore::packed_size, fp) > 0)
+    QFile fi(filename.c_str());
+    if (fi.open(QIODevice::ReadOnly))
     {
+        uint8_t *buf = new uint8_t [std::max(ZCore::packed_size, ZUserData::packed_size)];
+        fi.read(reinterpret_cast<char*>(buf), ZCore::packed_size);
         _core->unpack(buf);
-    }
-    if (fread(buf, 1, ZUserData::packed_size, fp) > 0)
-    {
+        fi.read(reinterpret_cast<char*>(buf), ZUserData::packed_size);
         _user->unpack(buf);
+        fi.close();
+        delete[] buf;
     }
-    fclose(fp);
-    delete[] buf;
 }
 
 void
@@ -389,8 +497,8 @@ ZSystem::play_media(int n)
     };
     if (!_prefs->getSound()) return;
     if (n < 0 || n > 5) return;
-    struct stat ss;
-    if (stat(files()->mp3_file(sound_names[n]).c_str(), &ss) == 0 && S_ISREG(ss.st_mode))
+    QFileInfo qfinfo(files()->mp3_file(sound_names[n]).c_str());
+    if (qfinfo.exists() && qfinfo.isFile())
     {
 #if QT_VERSION < QT_VERSION_CHECK(6,0,0)
         _mp.setMedia(QUrl::fromLocalFile(files()->mp3_file(sound_names[n]).c_str()));
@@ -427,9 +535,9 @@ ZSystem::dialog(uint8_t id)
             if (_core->cmdId() != 0x0f)
             {
                 // load game
+                QFileInfo qfinfo1(files()->user_file(1).c_str()), qfinfo2(files()->user_file(2).c_str()), qfinfo3(files()->user_file(3).c_str());
                 bool file_exists = false;
-                struct stat ss;
-                if (stat(files()->user_file(1).c_str(), &ss) == 0 && S_ISREG(ss.st_mode))
+                if (qfinfo1.exists() && qfinfo1.isFile())
                 {
                     file_exists = true;
                 }
@@ -437,7 +545,7 @@ ZSystem::dialog(uint8_t id)
                 {
                     dialog->btnA()->hide();
                 }
-                if (stat(files()->user_file(2).c_str(), &ss) == 0 && S_ISREG(ss.st_mode))
+                if (qfinfo2.exists() && qfinfo2.isFile())
                 {
                     file_exists = true;
                 }
@@ -445,7 +553,7 @@ ZSystem::dialog(uint8_t id)
                 {
                     dialog->btnB()->hide();
                 }
-                if (stat(files()->user_file(3).c_str(), &ss) == 0 && S_ISREG(ss.st_mode))
+                if (qfinfo3.exists() && qfinfo3.isFile())
                 {
                     file_exists = true;
                 }
@@ -557,6 +665,11 @@ ZSystem::interpreter(void)
                                 draw_screen(false);
                                 break;
                             case 3: // game clear
+                                play_media(0);
+                                {
+                                    ZCreditRoll *cr = new ZCreditRoll(this, ending_credit);
+                                    cr->startRoll(35000, this);
+                                }
                                 break;
                             default:
                                 break;
@@ -603,6 +716,12 @@ ZSystem::interpreter(void)
 void
 ZSystem::start()
 {
+    if (!_prefs->getSkipOpening())
+    {
+        ZCreditRoll *cr = new ZCreditRoll(this,opening_credit);
+        cr->startRoll(20000, this);
+    }
+    //
     ui->_le->show();
     ui->_prompt->show();
     ui->_btnTitle->hide();
@@ -626,9 +745,12 @@ ZSystem::about()
                            "<h3>ハイハイスクールアドベンチャー</h3>"
                            "<p>"
                            "&nbsp;PalmOS version: hiro © 2002-2004<br/>"
-                           "&nbsp;Android version: hiro © 2011-2024<br/>"
+                           "&nbsp;Android version: hiro © 2011-2025<br/>"
                            "&nbsp;M5 version: hiro © 2023-2024<br/>"
-                           "&nbsp;Qt version: hiro © 2024<br/>"
+                           "&nbsp;Qt version: hiro © 2024-2025<br/>"
+                            "&nbsp;PicoCalc version: hiro © 2025<br />"
+                            "&nbsp;SDL version: hiro © 2025<br />"
+                            "&nbsp;Windows version: hiro © 2025<br />"
                            "</p><p>"
                            "<b>Project ZOBPlus</b><br/>"
                            "&nbsp;Hayami &lt;hayami@zob.jp&gt;<br/>"

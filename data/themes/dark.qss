@@ -1,0 +1,11 @@
+/* dark qss */
+QWidget {
+        background-color: #2b2b2b;
+        color: #dddddd;
+}
+
+QPushButton {
+        background-color: #444444;
+        border: 1px solid #666;
+        padding: 4px 8px;
+}

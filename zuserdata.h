@@ -6,8 +6,9 @@
 #define ZUSERDATA_H
 
 #include <sys/types.h>
-#include <SDL2/SDL.h>
 #include <string>
+#include <cstring>
+#include <cstdint>
 
 class ZMapLink
 {
@@ -35,10 +36,11 @@ public:
         Down,
         In,
         Out,
-    };
+    };;
     ZMapLink();
     ZMapLink(const uint8_t b[]);
     ZMapLink(const ZMapLink &x);
+    ZMapLink &operator = (const uint8_t b[]);
     void setLink(int id, uint8_t value);
     uint8_t get(int id) const { return _link.l[id]; }
     uint8_t *pack(void) const { return (uint8_t*)_link.l; }

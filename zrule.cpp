@@ -5,6 +5,7 @@
 #include <zrule.h>
 #include <zuserdata.h>
 #include <random>
+#include <QFile>
 
 const int ZCore::packed_size = 8;
 
@@ -367,16 +368,19 @@ ZRuleBase::run(ZCore *core, ZUserData *user) const
 
 ZRules::ZRules(const std::string &file)
 {
-    FILE *fp = fopen(file.c_str(), "r");
+    QFile fi(file.c_str());
     uint8_t *buf = new uint8_t [ZRuleBase::file_block_size];
     int i = 0;
-    while (!feof(fp))
+    if (fi.open(QIODevice::ReadOnly))
     {
-        fread((char*)buf, ZRuleBase::file_block_size, 1, fp);
-        _rules[i++] = ZRuleBase(buf);
+        while(true)
+        {
+            QByteArray data = fi.read(ZRuleBase::file_block_size);
+            if (data.isEmpty()) break;
+            _rules[i++] = ZRuleBase(reinterpret_cast<const uint8_t*>(data.constData()));
+        }
+        fi.close();
     }
-    fclose(fp);
-    delete[] buf;
 }
 
 

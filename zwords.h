@@ -5,7 +5,6 @@
 #define ZWORDS_H
 
 #include <sys/types.h>
-#include <SDL2/SDL.h>
 #include <string>
 
 class ZWord

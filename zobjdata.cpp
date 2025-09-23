@@ -3,6 +3,7 @@
  */
 
 #include <zobjdata.h>
+#include <QFile>
 
 const uint16_t ZObjectData::_col[] = {
     Canvas::BLACK, Canvas::BLUE, Canvas::RED, Canvas::MAGENTA, 
@@ -187,16 +188,15 @@ ZObjRoot::draw(Canvas *cv, int id, bool offset)
     {
         _id = id;
         if (_obj != NULL) delete _obj;
-        FILE *fp = fopen(_file.c_str(), "r");
-        fseek(fp, blockSize * _id, SEEK_SET);
-        uint8_t *buf = new uint8_t [blockSize];
-        if (!feof(fp))
+        QFile fi(_file.c_str());
+        if(fi.open(QIODevice::ReadOnly))
         {
-            fread((char*)buf, blockSize, 1, fp);
+            fi.seek(blockSize * _id);
+            QByteArray data = fi.read(blockSize);
+            const uint8_t *buf = reinterpret_cast<const uint8_t*>(data.constData());
+            _obj = (_id == 14) ? new ZTeacherData(buf) : new ZObjectData(buf);
+            fi.close();
         }
-        _obj = (_id == 14) ? new ZTeacherData(buf) : new ZObjectData(buf);
-        delete[] buf;
-        fclose(fp);
     }
     _obj->draw(cv, offset);
 }

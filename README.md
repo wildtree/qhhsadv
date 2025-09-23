@@ -1,8 +1,10 @@
+# About this game
+
 QT based version of High High School Adventure
 To play the game, you need to have data files.
 
 
-1. build and installation
+# How to build and play
 
 This depends on some packages in Ubuntu and qt6, run following installation before build.
 
@@ -18,4 +20,12 @@ Then build as below:
   ...
   $ ./qhhsadv &
 
-As described first, this requires data files, expected located under ~/.HHSAdv directory.
+As described first, this requires data files, expected located under your AppLocalDataLocation, for Linux it should be ~/.local/share/WildTreeJP/QHHSAdv directory, for Windows, it should be $env:LOCALAPPDATA\WildTreeJP/QHHSAdv.
+
+Copy all files including themes directory and its contents under the data folder.
+
+# Limitations
+
+Theme mode 'System' works if you build with Qt 6.5.0 or later version.
+Otherwise, it is same as 'Light'.
+

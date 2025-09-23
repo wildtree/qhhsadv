@@ -5,6 +5,7 @@
 #include <zwords.h>
 #include <cctype>
 #include <algorithm>
+#include <QFile>
 
 ZWord::ZWord(const char b[])
    : _word(""), _id(-1)
@@ -35,31 +36,31 @@ ZWord::match(const std::string &v) const
 
 ZWords::ZWords(const std::string &file)
 {
-    FILE *fp = fopen(file.c_str(), "r");
-    char buf[5];
+    QFile fi(file.c_str());
+    if (!fi.open(QIODevice::ReadOnly)) return;
+
     int len = 0;
     int p = 0;
-    while (!feof(fp))
+    while (true)
     {
-        int sz = fread(buf, 5, 1, fp);
-        len += sz;
-        if (len >= 0x200 || buf[0] == 0) break;
-        _verbs[p++] = ZWord(buf);
+        QByteArray data = fi.read(5);
+        if (data.isEmpty()) break;
+        len += data.size();
+        if (len >= 0x200 || data.constData()[0] == 0) break;
+        _verbs[p++] = ZWord(data.constData());
     }
-//    M5.Lcd.setCursor(0,0);
-//    M5.Lcd.printf("%d verbs ",p);
-    fseek(fp, 0x200, SEEK_SET);
+    fi.seek(0x200);
     len = 0;
     p = 0;
-    while(!feof(fp))
+    while (true)
     {
-        int sz = fread(buf, 5, 1, fp);
-        len += sz;
-        if (len >= 0x200 || buf[0] == 0) break;
-        _objs[p++] = ZWord(buf);
+        QByteArray data = fi.read(5);
+        if (data.isEmpty()) break;
+        len += data.size();
+        if (len >= 0x200 || data.constData()[0] == 0) break;
+        _objs[p++] = ZWord(data.constData());
     }
-//    M5.Lcd.printf("/ %d objs ",p);
-    fclose(fp);
+    fi.close();
 }
 
 ZWords::ZWords(const ZWords &x)

@@ -6,7 +6,6 @@
 #define ZRULE_H
 
 #include <sys/types.h>
-#include <SDL2/SDL.h>
 #include <random>
 #include <zuserdata.h>
 #include <queue>

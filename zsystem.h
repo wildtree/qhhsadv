@@ -21,7 +21,7 @@
 #include <prefs.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <unistd.h>
+#include <QFileInfo>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class ZSystem; }
@@ -52,7 +52,7 @@ public:
     void draw_screen(bool);
     void prompt(void) const;
     void interpreter(void);
-    void loop(SDL_Event &ev);
+    //void loop(SDL_Event &ev);
     void play_media(int n);
     const Files *files() const { return _files; }
     void applyTheme(bool dark);

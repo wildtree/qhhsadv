@@ -51,7 +51,7 @@
      <property name="spacing">
       <number>1</number>
      </property>
-     <item alignment="Qt::AlignHCenter">
+     <item alignment="Qt::AlignmentFlag::AlignHCenter">
       <widget class="QGraphicsView" name="_gv">
        <property name="minimumSize">
         <size>
@@ -66,10 +66,10 @@
         </size>
        </property>
        <property name="verticalScrollBarPolicy">
-        <enum>Qt::ScrollBarAlwaysOff</enum>
+        <enum>Qt::ScrollBarPolicy::ScrollBarAlwaysOff</enum>
        </property>
        <property name="horizontalScrollBarPolicy">
-        <enum>Qt::ScrollBarAlwaysOff</enum>
+        <enum>Qt::ScrollBarPolicy::ScrollBarAlwaysOff</enum>
        </property>
       </widget>
      </item>
@@ -88,15 +88,27 @@
         </size>
        </property>
        <property name="horizontalScrollBarPolicy">
-        <enum>Qt::ScrollBarAlwaysOff</enum>
+        <enum>Qt::ScrollBarPolicy::ScrollBarAlwaysOff</enum>
        </property>
        <property name="readOnly">
         <bool>true</bool>
        </property>
       </widget>
      </item>
-     <item alignment="Qt::AlignBottom">
+     <item alignment="Qt::AlignmentFlag::AlignBottom">
       <widget class="QWidget" name="_hbox0" native="true">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>0</height>
+        </size>
+       </property>
        <property name="maximumSize">
         <size>
          <width>320</width>
@@ -112,6 +124,12 @@
             <verstretch>0</verstretch>
            </sizepolicy>
           </property>
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>20</height>
+           </size>
+          </property>
           <property name="text">
            <string>タイトルへ戻る</string>
           </property>
@@ -122,13 +140,26 @@
         </item>
         <item>
          <widget class="QLabel" name="_prompt">
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>20</height>
+           </size>
+          </property>
           <property name="text">
            <string>どうする?</string>
           </property>
          </widget>
         </item>
         <item>
-         <widget class="QLineEdit" name="_le"/>
+         <widget class="QLineEdit" name="_le">
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>20</height>
+           </size>
+          </property>
+         </widget>
         </item>
         <item>
          <widget class="QPushButton" name="_btnStart">
@@ -137,6 +168,12 @@
             <horstretch>0</horstretch>
             <verstretch>0</verstretch>
            </sizepolicy>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>20</height>
+           </size>
           </property>
           <property name="text">
            <string>ゲームスタート</string>
@@ -158,7 +195,7 @@
      <x>0</x>
      <y>0</y>
      <width>320</width>
-     <height>27</height>
+     <height>17</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_F">

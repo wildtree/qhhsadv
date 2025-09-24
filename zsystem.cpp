@@ -94,7 +94,7 @@ ZAMA HIGH SCHOOL MICRO COMPUTER CIRCLE</font></center>)";
 ZSystem::ZSystem(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::ZSystem)
-    , _core(nullptr), _dict(nullptr), _zmap(nullptr), _obj(nullptr), _user(nullptr), _msg(nullptr), _rules(nullptr)
+    , _pi(nullptr), _core(nullptr), _dict(nullptr), _zmap(nullptr), _obj(nullptr), _user(nullptr), _msg(nullptr), _rules(nullptr)
 {
     ui->setupUi(this);
     QCoreApplication::setOrganizationName("WildTreeJP");
@@ -102,7 +102,8 @@ ZSystem::ZSystem(QWidget *parent)
 
     QString path = QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation);
 
-    _cv = new Canvas(0, 0, ui->_gv->width(), ui->_gv->height());
+    _pi = _scene.addPixmap(QPixmap(gwidth, gheight));
+    _cv = new Canvas(0, 0, gwidth, gheight);
     _files = new Files();
     _files->base_dir(path.toStdString());
     _core = new ZCore();
@@ -129,8 +130,10 @@ ZSystem::ZSystem(QWidget *parent)
     {
         this->setWindowIcon(QIcon(QPixmap(_files->icon_file().c_str())));
     }
-
+    _scene.setSceneRect(0, 0, gwidth, gheight);
     ui->_gv->setScene(&_scene);
+    ui->_gv->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
+    ui->_gv->setAlignment(Qt::AlignCenter);
     QObject::connect(ui->_le, SIGNAL(editingFinished()), this, SLOT(parse()));
     QObject::connect(ui->_btnStart, SIGNAL(clicked()), this, SLOT(start()));
     QObject::connect(ui->_btnTitle, SIGNAL(clicked()), this, SLOT(title()));
@@ -206,7 +209,8 @@ ZSystem::loadRules(const std::string &file)
 void
 ZSystem::paintEvent(QPaintEvent *ev)
 {
-    _scene.addPixmap(QPixmap::fromImage(*(_cv->image())));
+    //_scene.addPixmap(QPixmap::fromImage(*(_cv->image())));
+    _pi->setPixmap(QPixmap::fromImage(*(_cv->image())));
     ui->_gv->invalidateScene(ev->rect());
 }
 
@@ -220,9 +224,9 @@ ZSystem::parse()
 
     ui->_mv->appendPlainText(">>> " + cmd_line);
     std::string l = cmd_line.toStdString();
-    int i = l.find(' ');
+    size_t i = l.find(' ');
     _core->cmdId(_dict->findVerb(l.substr(0, i)));
-    if (i < 0)
+    if (i == std::string::npos)
     {
         _core->objId(-1);
     }

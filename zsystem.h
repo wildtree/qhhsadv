@@ -69,6 +69,7 @@ private:
 #if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
     QAudioOutput _audio;
 #endif
+    QGraphicsPixmapItem *_pi;
 
     Canvas *_cv;
     ZCore *_core;
@@ -87,6 +88,9 @@ private:
         Play,
         GameOver,
     } _mode;
+
+    const int gwidth = 256;
+    const int gheight = 152;
 
     Mode getMode(void) const { return _mode; }
     void setMode(Mode m) { _mode = m; }

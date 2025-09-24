@@ -60,11 +60,21 @@ if(WIN32)
 endif()
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
-    qt_add_executable(qhhsadv
-        ${PROJECT_SOURCES}
-        ZCreditRoll.h
-        qhhsadv.rc
-    )
+    if(WIN32)
+        qt_add_executable(qhhsadv WIN32
+            ${PROJECT_SOURCES}
+            ZCreditRoll.h
+            qhhsadv.rc
+            resizablegraphicsview.h
+        )
+    else()
+        qt_add_executable(qhhsadv
+            ${PROJECT_SOURCES}
+            ZCreditRoll.h
+            qhhsadv.rc
+            resizablegraphicsview.h
+        )
+    endif()
 
     qt_create_translation(QM_FILES ${CMAKE_SOURCE_DIR} ${TS_FILES})
 else()

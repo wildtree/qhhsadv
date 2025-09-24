@@ -5,7 +5,20 @@ QWidget {
 }
 
 QPushButton {
-        background-color: #e0e0e0;
-        border: 1px solid #888;
-        padding: 4px 8px;
+    background-color: #f0f0f0;
+    color: #202020;
+    border: 1px solid #c0c0c0;
+    padding: 6px 12px;
+    border-radius: 4px;
 }
+
+QPushButton:hover {
+    background-color: #e0e0e0;
+}
+
+QPushButton:checked {
+    background-color: #0078d7;   /* Windowsのアクセントブルー */
+    color: white;
+    border: 1px solid #005a9e;
+}
+

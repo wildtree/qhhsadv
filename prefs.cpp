@@ -1,6 +1,5 @@
 
 #include <prefs.h>
-#include <iostream>
 #include <QtCore>
 #include <QLabel>
 #include <QRadioButton>
@@ -9,7 +8,44 @@
 #include <QFile>
 #include <QJsonDocument>
 #include <QJsonObject>
+#include <QGuiApplication>
 
+
+QWidget*
+Prefs::createFontSizeSelector(QWidget *parent)
+{
+    QWidget *w = new QWidget(parent);
+    auto *layout = new QHBoxLayout(w);
+    w->setLayout(layout);
+
+    QLabel *label = new QLabel("文字サイズ");
+    layout->addWidget(label);
+
+    QButtonGroup *group = new QButtonGroup(w);
+    group->setExclusive(true);
+
+    QStringList labels = {"Aあ", "Aあ", "Aあ", "Aあ"};
+    QList<int> sizes = {10, 12, 14, 16};
+
+    for (int i = 0; i < labels.size(); ++i) {
+        QPushButton *btn = new QPushButton(labels[i], w);
+        btn->setCheckable(true);
+        QFont f = btn->font();
+        f.setPointSize(sizes[i]);
+        btn->setFont(f);
+        if (sizes[i] == getFontSize()) btn->setChecked(true);
+        btn->setFixedHeight(40);
+        layout->addWidget(btn);
+        group->addButton(btn, sizes[i]);
+    }
+
+    QObject::connect(group, QOverload<int>::of(&QButtonGroup::idClicked), this,
+                     [this](int size){
+                         setFontSize(size);
+                     });
+
+    return w;
+}
 
 void
 Prefs::dialog()
@@ -40,6 +76,7 @@ Prefs::dialog()
     {
     case ThemeType::Light: defchk = light; break;
     case ThemeType::Dark:  defchk = dark; break;
+    case ThemeType::System: break;
     }
     defchk->setChecked(true);
 
@@ -66,6 +103,7 @@ Prefs::dialog()
     vbox->addLayout(form0);
     vbox->addLayout(form1);
     vbox->addLayout(hbox);
+    vbox->addWidget(createFontSizeSelector(&dlg));
     vbox->addWidget(bbox);
 
     dlg.setModal(true);
@@ -90,6 +128,7 @@ Prefs::load()
 
     QJsonObject root = doc.object();
     setSound(root.value("sound").toBool(true));
+    setFontSize(root.value("fontSize").toInt(12));
     std::string theme = root.value("theme").toString().toStdString();
     if (theme == "light") setThemeType(ThemeType::Light);
     else if (theme == "dark") setThemeType(ThemeType::Dark);
@@ -101,6 +140,7 @@ Prefs::save() const
 {
     QJsonObject root;
     root["sound"] = getSound();
+    root["fontSize"] = getFontSize();
     switch(getThemeType())
     {
     case ThemeType::Light:

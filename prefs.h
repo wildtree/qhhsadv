@@ -8,7 +8,6 @@
 #include <QFormLayout>
 #include <QVBoxLayout>
 #include <QCheckBox>
-#include <fstream>
 #include <functional>
 
 enum class ThemeType {
@@ -20,7 +19,7 @@ class Prefs : public QObject
     Q_OBJECT
 
 public:
-    Prefs() : _sound(true), _skip_opening(false), _theme_type(ThemeType::System) {}
+    Prefs() : _sound(true), _skip_opening(false),  _theme_type(ThemeType::System), _font_size(12) {}
     ~Prefs() {}
 
     void setPrefsFilename(std::string f) { _f = f; }
@@ -30,7 +29,9 @@ public:
     bool getSound() const { return _sound; }
     bool getSkipOpening() const { return _skip_opening; }
     ThemeType getThemeType() const { return _theme_type; }
-    void setThemeHandler(std::function<void(ThemeType)> f) { _themeHandler = f; };
+    int getFontSize() const { return _font_size; }
+    void setThemeHandler(std::function<void(ThemeType)> f) { _themeHandler = f; }
+    void setFontSizeHandler(std::function<void(int)> f) { _fontSizeHandler = f; }
 public slots:
     void dialog();
     void setSound(int f) { _sound = (f != 0); }
@@ -44,12 +45,19 @@ public slots:
         }
     }
     void setThemeType(ThemeType t) { _theme_type = t; _themeHandler(_theme_type); }
+    void setFontSize(int size) { _font_size = size; _fontSizeHandler(size); }
+private:
+    QWidget* createFontSizeSelector(QWidget *parent = nullptr);
 protected:
     std::string _f;
     bool _sound;
     bool _skip_opening;
     ThemeType _theme_type;
+    int _font_size;
     std::function<void(ThemeType)> _themeHandler;
+    std::function<void(int)> _fontSizeHandler;
 };
+
+
 
 #endif // PREFS_H

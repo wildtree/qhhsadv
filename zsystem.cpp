@@ -108,6 +108,11 @@ ZSystem::ZSystem(QWidget *parent)
     _files->base_dir(path.toStdString());
     _core = new ZCore();
     _prefs = new Prefs();
+    _prefs->setFontSizeHandler([this](int size){
+        QFont f = ui->_mv->font();
+        f.setPointSize(size);
+        ui->_mv->setFont(f) ;
+    });
     _prefs->setThemeHandler([this](ThemeType theme){
         bool dark = false;
         if (theme == ThemeType::System)

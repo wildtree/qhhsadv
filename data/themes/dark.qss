@@ -5,7 +5,19 @@ QWidget {
 }
 
 QPushButton {
-        background-color: #444444;
-        border: 1px solid #666;
-        padding: 4px 8px;
+    background-color: #2d2d2d;
+    color: #e0e0e0;
+    border: 1px solid #555;
+    padding: 6px 12px;
+    border-radius: 4px;
+}
+
+QPushButton:hover {
+    background-color: #3a3a3a;
+}
+
+QPushButton:checked {
+    background-color: #4cc2ff;   /* 明るいシアン系 */
+    color: black;
+    border: 1px solid #1a9ecb;
 }

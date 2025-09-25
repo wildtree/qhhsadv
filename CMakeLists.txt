@@ -54,6 +54,8 @@ set(PROJECT_SOURCES
         ZCreditRoll.h
         resizablegraphicsview.h
         files.cpp
+        switchstyle.h
+        switchbox.h
         ${TS_FILES}
 )
 
@@ -67,8 +69,6 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         qt_add_executable(qhhsadv WIN32
             ${PROJECT_SOURCES}
             qhhsadv.rc
-            switchstyle.h
-            switchbox.h
         )
     else()
         qt_add_executable(qhhsadv

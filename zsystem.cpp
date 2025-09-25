@@ -34,7 +34,7 @@ const QString ending_credit = R"(<<center><font size="2"><b>High High School Adv
 PalmOS version: hiro © 2002-2004<br />
 Android version: hiro © 2011-2025<br />
 M5 version: hiro © 2023-2025<br />
-Qt version: hiro © 2024<br />
+Qt version: hiro © 2024-2025<br />
 PicoCalc version: hiro © 2025<br />
 SDL version: hiro © 2025<br />
 Windows version: hiro © 2025<br />

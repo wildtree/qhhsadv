@@ -37,6 +37,11 @@ public:
     std::string theme_file(bool dark) const { return dark ? base_dir() + "/themes/dark.qss" : base_dir() + "/themes/light.qss";}
 
     bool exists(std::string f) const { QFileInfo finfo(f.c_str()); return finfo.exists() && finfo.isFile(); }
+
+    bool copyData(const std::string &src);
+private:
+    bool copyRecursively(const QString &srcPath, const QString &dstPath);
+    int getVersion(const QString &dir);
 };
 
 #endif

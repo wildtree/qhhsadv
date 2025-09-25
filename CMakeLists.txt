@@ -66,6 +66,7 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
             ZCreditRoll.h
             qhhsadv.rc
             resizablegraphicsview.h
+            files.cpp
         )
     else()
         qt_add_executable(qhhsadv
@@ -90,6 +91,12 @@ else()
 
     qt5_create_translation(QM_FILES ${CMAKE_SOURCE_DIR} ${TS_FILES})
 endif()
+
+add_custom_command(TARGET qhhsadv POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+            ${CMAKE_SOURCE_DIR}/data
+            $<TARGET_FILE_DIR:qhhsadv>/data
+)
 
 
 target_link_libraries(qhhsadv PRIVATE Qt${QT_VERSION_MAJOR}::Widgets Qt${QT_VERSION_MAJOR}::Multimedia)

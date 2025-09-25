@@ -7,6 +7,7 @@
 #endif
 #include <QStandardPaths>
 #include <QRandomGenerator>
+#include <QDir>
 #include "ZCreditRoll.h"
 
 const std::string ZSystem::_credit[] = {
@@ -106,6 +107,7 @@ ZSystem::ZSystem(QWidget *parent)
     _cv = new Canvas(0, 0, gwidth, gheight);
     _files = new Files();
     _files->base_dir(path.toStdString());
+    _files->copyData(QDir::current().filePath("data").toStdString());
     _core = new ZCore();
     _prefs = new Prefs();
     _prefs->setFontSizeHandler([this](int size){
@@ -130,7 +132,6 @@ ZSystem::ZSystem(QWidget *parent)
 
     _prefs->setPrefsFilename(_files->prefs_file());
     if (_files->exists(_files->prefs_file())) _prefs->load();
-
     if(_files->exists(_files->icon_file()))
     {
         this->setWindowIcon(QIcon(QPixmap(_files->icon_file().c_str())));
@@ -839,3 +840,4 @@ ZSystem::applyTheme(bool dark)
         qApp->setStyleSheet(style);
     }
 }
+

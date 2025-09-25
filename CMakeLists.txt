@@ -51,6 +51,9 @@ set(PROJECT_SOURCES
         dialog.cpp
         prefs.h
         prefs.cpp
+        ZCreditRoll.h
+        resizablegraphicsview.h
+        files.cpp
         ${TS_FILES}
 )
 
@@ -63,17 +66,11 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
     if(WIN32)
         qt_add_executable(qhhsadv WIN32
             ${PROJECT_SOURCES}
-            ZCreditRoll.h
             qhhsadv.rc
-            resizablegraphicsview.h
-            files.cpp
         )
     else()
         qt_add_executable(qhhsadv
             ${PROJECT_SOURCES}
-            ZCreditRoll.h
-            qhhsadv.rc
-            resizablegraphicsview.h
         )
     endif()
 

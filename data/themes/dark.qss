@@ -21,3 +21,9 @@ QPushButton:checked {
     color: black;
     border: 1px solid #1a9ecb;
 }
+
+SwitchBox {
+    qproperty-switchColorOn: #4CC2FF;
+    qproperty-switchColorOff: #CCCCCC;
+    qproperty-switchButtonColor: #FFFFFF;
+}

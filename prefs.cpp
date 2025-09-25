@@ -9,6 +9,8 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QGuiApplication>
+#include "switchbox.h"
+#include "switchstyle.h"
 
 
 QWidget*
@@ -51,21 +53,25 @@ void
 Prefs::dialog()
 {
     QDialog dlg;
-    QCheckBox *chkSound = new QCheckBox();
+    SwitchBox *chkSound = new SwitchBox();
+    chkSound->setStyle(new SwitchStyle(chkSound->style()));
+    chkSound->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
     chkSound->setChecked(_sound);
     QObject::connect(chkSound, SIGNAL(stateChanged(int)), this, SLOT(setSound(int)));
 
-    QCheckBox *chkSkipOpening = new QCheckBox();
+    SwitchBox *chkSkipOpening = new SwitchBox();
+    chkSkipOpening->setStyle(new SwitchStyle(chkSkipOpening->style()));
+    chkSkipOpening->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
     chkSkipOpening->setChecked(_skip_opening);
     QObject::connect(chkSkipOpening, SIGNAL(stateChanged(int)), this, SLOT(setSkipOpening(int)));
 
-    QFormLayout *form0 = new QFormLayout();
-    form0->setLabelAlignment(Qt::AlignLeft);
-    form0->addRow("音を鳴らす", chkSound);
+    QGridLayout *grid0 = new QGridLayout;
+    grid0->addWidget(new QLabel("音を鳴らす"), 0, 0, Qt::AlignLeft);
+    grid0->addWidget(chkSound, 0, 1, Qt::AlignRight);
 
-    QFormLayout *form1 = new QFormLayout();
-    form1->setLabelAlignment(Qt::AlignLeft);
-    form1->addRow("オープニングを飛ばす", chkSkipOpening);
+    QGridLayout *grid1 = new QGridLayout;
+    grid1->addWidget(new QLabel("オープニングを飛ばす"), 0, 0, Qt::AlignLeft);
+    grid1->addWidget(chkSkipOpening, 0, 1, Qt::AlignRight);
 
     QLabel *label = new QLabel("テーマ");
     QRadioButton *light = new QRadioButton("ライト");
@@ -100,8 +106,8 @@ Prefs::dialog()
     bbox->button(QDialogButtonBox::Ok)->setText("了解");
 
     QVBoxLayout *vbox = new QVBoxLayout(&dlg);
-    vbox->addLayout(form0);
-    vbox->addLayout(form1);
+    vbox->addLayout(grid0);
+    vbox->addLayout(grid1);
     vbox->addLayout(hbox);
     vbox->addWidget(createFontSizeSelector(&dlg));
     vbox->addWidget(bbox);

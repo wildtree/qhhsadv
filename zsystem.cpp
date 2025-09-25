@@ -832,11 +832,17 @@ ZSystem::help()
 void
 ZSystem::applyTheme(bool dark)
 {
-    QString fileName = QString(files()->theme_file(dark).c_str());
-    QFile f(fileName);
-    if (f.open(QFile::ReadOnly))
+    QString userFileName = QString(files()->user_theme_file(dark).c_str());
+    QString sysFileName = QString(files()->theme_file(dark).c_str());
+    QFile uf(userFileName), sf(sysFileName);
+    if (uf.exists() && uf.open(QFile::ReadOnly))
     {
-        QString style = QLatin1String(f.readAll());
+        QString style = QLatin1String(uf.readAll());
+        qApp->setStyleSheet(style);
+    }
+    else if(sf.exists() && sf.open(QFile::ReadOnly))
+    {
+        QString style = QLatin1String(sf.readAll());
         qApp->setStyleSheet(style);
     }
 }

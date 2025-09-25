@@ -9,6 +9,7 @@
 #define FILES_H
 
 #include <QFileInfo>
+#include <QDir>
 
 class Files
 {
@@ -34,7 +35,8 @@ public:
 
     std::string font_file() const { return "/usr/share/fonts/truetype/fonts-japanese-gothic.ttf";}
 
-    std::string theme_file(bool dark) const { return dark ? base_dir() + "/themes/dark.qss" : base_dir() + "/themes/light.qss";}
+    std::string theme_file(bool dark) const { return dark ? QDir::current().filePath("data").toStdString() + "/themes/dark.qss" : QDir::current().filePath("data").toStdString() + "/themes/light.qss";}
+    std::string user_theme_file(bool dark) const { return dark ? base_dir() + "/themes/user_dark.qss" : base_dir() + "/themes/user_light.qss";}
 
     bool exists(std::string f) const { QFileInfo finfo(f.c_str()); return finfo.exists() && finfo.isFile(); }
 

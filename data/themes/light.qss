@@ -28,3 +28,22 @@ SwitchBox {
     qproperty-switchButtonColor: #CCCCCC;
 }
 
+QMenu::item {
+    background-color: transparent;
+    color: black;
+}
+
+QMenu::item:selected {
+    background-color: #0078D7;
+    color: white;
+}
+
+QMenuBar::item {
+    background-color: transparent;
+    color: black;
+}
+
+QMenuBar::item:selected {
+    background-color: #0078D7;
+    color: white;
+}

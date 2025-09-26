@@ -2,7 +2,7 @@
 
 [Setup]
 AppName=High High School Adventure Qt
-AppVersion=1.0.0
+AppVersion=1.1.0
 AppPublisher=WildTreeJP
 DefaultDirName={commonpf}\QHHSAdv
 DefaultGroupName=ハイハイスクールアドベンチャー

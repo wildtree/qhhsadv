@@ -97,6 +97,78 @@ add_custom_command(TARGET qhhsadv POST_BUILD
             $<TARGET_FILE_DIR:qhhsadv>/data
 )
 
+if(WIN32)
+    # デプロイ先ディレクトリ
+    set(DEPLOY_DIR ${CMAKE_BINARY_DIR}/installer/deploy)
+
+    # コピー対象
+    set(APP_EXE $<TARGET_FILE:qhhsadv>)
+    set(DATA_DIR ${CMAKE_BINARY_DIR}/data)
+
+    # デプロイ処理
+    add_custom_command(
+        TARGET qhhsadv POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E make_directory ${DEPLOY_DIR}
+        COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:qhhsadv> ${DEPLOY_DIR}
+        COMMAND ${CMAKE_COMMAND} -E copy_directory ${DATA_DIR} ${DEPLOY_DIR}/data
+        COMMENT "Copying files to installer/deploy..."
+    )
+
+    # Qt DLL やプラグインを集める場合（windeployqt）
+    # Qt bin ディレクトリを探す
+    get_target_property(QT_QMAKE_EXECUTABLE Qt6::qmake IMPORTED_LOCATION)
+    get_filename_component(QT_BIN_DIR "${QT_QMAKE_EXECUTABLE}" DIRECTORY)
+
+    set(WINDEPLOYQT_EXECUTABLE "${QT_BIN_DIR}/windeployqt.exe")
+
+    add_custom_command(
+        TARGET qhhsadv POST_BUILD
+        COMMAND "${WINDEPLOYQT_EXECUTABLE}" --dir ${DEPLOY_DIR} $<TARGET_FILE:qhhsadv>
+        COMMENT "Running windeployqt..."
+    )
+
+    add_custom_command(
+        TARGET qhhsadv POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_DIR}/installer
+        COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_SOURCE_DIR}/installer/setup.iss ${CMAKE_BINARY_DIR}/installer
+        COMMENT "Copying setup.iss..."
+    )
+    # Inno Setup コンパイラを探す
+
+    find_program(INNO_SETUP_COMPILER
+        NAMES ISCC iscc
+        HINTS
+            "$ENV{LOCALAPPDATA}/Programs/Inno Setup 6"
+    )
+    # PATH に入っている場合も探す
+    if(NOT INNO_SETUP_COMPILER)
+        find_program(INNO_SETUP_COMPILER NAMES ISCC iscc)
+    endif()
+
+    if(INNO_SETUP_COMPILER)
+        message(STATUS "Inno Setup found: ${INNO_SETUP_COMPILER}")
+
+        # .iss スクリプトの場所
+        set(INNO_SCRIPT ${CMAKE_BINARY_DIR}/installer/setup.iss)
+
+        # 出力先（例: build ディレクトリ内）
+        set(INSTALLER_OUTPUT ${CMAKE_BINARY_DIR}/installer/qhhsadv_setup.exe)
+
+        add_custom_command(
+            OUTPUT ${INSTALLER_OUTPUT}
+            COMMAND "${INNO_SETUP_COMPILER}" "${INNO_SCRIPT}"
+            DEPENDS qhhsadv  # アプリ本体がビルドされてから実行
+            WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+            COMMENT "Building Inno Setup installer..."
+        )
+
+        add_custom_target(installer ALL
+            DEPENDS ${INSTALLER_OUTPUT}
+        )
+    else()
+        message(WARNING "Inno Setup (ISCC.exe) not found. Skipping installer target.")
+    endif()
+endif()
 
 target_link_libraries(qhhsadv PRIVATE Qt${QT_VERSION_MAJOR}::Widgets Qt${QT_VERSION_MAJOR}::Multimedia)
 
@@ -118,5 +190,8 @@ if(UNIX AND NOT APPLE)
     # アイコン（48x48 の例）
     install(FILES ${CMAKE_SOURCE_DIR}/resources/icons/qhhsadv.png
             DESTINATION /usr/share/icons/hicolor/48x48/apps)
+
+elseif(WIN32)
+
 endif()
 

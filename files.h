@@ -2,6 +2,7 @@
 // files
 //
 
+#include <QCoreApplication>
 #include <string>
 #include <sys/stat.h>
 
@@ -35,7 +36,7 @@ public:
 
     std::string font_file() const { return "/usr/share/fonts/truetype/fonts-japanese-gothic.ttf";}
 
-    std::string theme_file(bool dark) const { return dark ? QDir::current().filePath("data").toStdString() + "/themes/dark.qss" : QDir::current().filePath("data").toStdString() + "/themes/light.qss";}
+    std::string theme_file(bool dark) const { return QCoreApplication::applicationDirPath().toStdString() + "/data" + (dark ? "/themes/dark.qss" : "/themes/light.qss");}
     std::string user_theme_file(bool dark) const { return dark ? base_dir() + "/themes/user_dark.qss" : base_dir() + "/themes/user_light.qss";}
 
     bool exists(std::string f) const { QFileInfo finfo(f.c_str()); return finfo.exists() && finfo.isFile(); }

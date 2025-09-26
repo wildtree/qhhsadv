@@ -102,12 +102,13 @@ ZSystem::ZSystem(QWidget *parent)
     QCoreApplication::setApplicationName("QHHSAdv");
 
     QString path = QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation);
+    QString dataSrc = QCoreApplication::applicationDirPath() + "/data";
 
     _pi = _scene.addPixmap(QPixmap(gwidth, gheight));
     _cv = new Canvas(0, 0, gwidth, gheight);
     _files = new Files();
     _files->base_dir(path.toStdString());
-    _files->copyData(QDir::current().filePath("data").toStdString());
+    _files->copyData(dataSrc.toStdString());
     _core = new ZCore();
     _prefs = new Prefs();
     _prefs->setFontSizeHandler([this](int size){

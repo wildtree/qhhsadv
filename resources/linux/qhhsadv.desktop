@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=ハイハイスクールアドベンチャー
+Comment=アドベンチャーゲーム
+Exec=qhhsadv
+Icon=qhhsadv
+Terminal=false
+Categories=Game;AdventureGame;

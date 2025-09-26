@@ -99,3 +99,24 @@ add_custom_command(TARGET qhhsadv POST_BUILD
 
 
 target_link_libraries(qhhsadv PRIVATE Qt${QT_VERSION_MAJOR}::Widgets Qt${QT_VERSION_MAJOR}::Multimedia)
+
+if(UNIX AND NOT APPLE)
+    # 実行ファイルを /opt/qhhsadv に配置
+    install(TARGETS qhhsadv DESTINATION /opt/qhhsadv)
+
+    # data ディレクトリを /opt/qhhsadv にコピー
+    install(DIRECTORY ${CMAKE_BINARY_DIR}/data DESTINATION /opt/qhhsadv)
+
+    # ラッパースクリプトを /usr/bin にインストール
+    install(PROGRAMS ${CMAKE_SOURCE_DIR}/scripts/qhhsadv.sh
+            DESTINATION /usr/bin
+            RENAME qhhsadv)
+    # .desktop ファイル
+    install(FILES ${CMAKE_SOURCE_DIR}/resources/linux/qhhsadv.desktop
+            DESTINATION /usr/share/applications)
+
+    # アイコン（48x48 の例）
+    install(FILES ${CMAKE_SOURCE_DIR}/resources/icons/qhhsadv.png
+            DESTINATION /usr/share/icons/hicolor/48x48/apps)
+endif()
+

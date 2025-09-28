@@ -15,7 +15,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(APP_NAME "qhhsadv")
 set(APP_VERSION_MAJOR "1")
 set(APP_VERSION_MINOR "1")
-set(APP_VERSION_PATCH "1")
+set(APP_VERSION_PATCH "2")
 set(APP_VERSION "${APP_VERSION_MAJOR}.${APP_VERSION_MINOR}.${APP_VERSION_PATCH}")
 
 # QtCreator supports the following variables for Android, which are identical to qmake Android variables.
@@ -189,7 +189,7 @@ if(UNIX AND NOT APPLE)
     set(CPACK_GENERATOR "DEB")
     set(CPACK_DEBIAN_PACKAGE_MAINTAINER "Hiroyuki Araki") # 必須
     set(CPACK_DEBIAN_PACKAGE_SECTION "games")
-    set(CPACK_DEBIAN_PACKAGE_DEPENDS "libqt6core6 (>= 6.4.0), libc6 (>= 2.34), libqt6widget6 (>= 6.4.0)")
+    set(CPACK_DEBIAN_PACKAGE_DEPENDS "libqt6core6 (>= 6.4.0), libc6 (>= 2.34), libqt6widgets6 (>= 6.4.0)")
 
     # アーキテクチャ指定（自動判定も可能）
     string(TOLOWER "${CMAKE_SYSTEM_PROCESSOR}" DETECTED_ARCH)

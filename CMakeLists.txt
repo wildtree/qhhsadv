@@ -174,14 +174,14 @@ target_link_libraries(qhhsadv PRIVATE Qt${QT_VERSION_MAJOR}::Widgets Qt${QT_VERS
 
 if(UNIX AND NOT APPLE)
     # パッケージの基本情報
-    set(CPACK_PACKAGE_NAME "myapp")
+    set(CPACK_PACKAGE_NAME "qhhsadv")
     set(CPACK_PACKAGE_VERSION "1.1.0")
-    set(CPACK_PACKAGE_CONTACT "you@example.com")
+    set(CPACK_PACKAGE_CONTACT "wildtree@gmail.com")
 
     # Debian パッケージ用のメタ情報
     set(CPACK_GENERATOR "DEB")
-    set(CPACK_DEBIAN_PACKAGE_MAINTAINER "Hiroyuki") # 必須
-    set(CPACK_DEBIAN_PACKAGE_SECTION "utils")
+    set(CPACK_DEBIAN_PACKAGE_MAINTAINER "Hiroyuki Araki") # 必須
+    set(CPACK_DEBIAN_PACKAGE_SECTION "games")
     set(CPACK_DEBIAN_PACKAGE_DEPENDS "libqt6core6 (>= 6.4.0), libc6 (>= 2.34), libqt6widget6 (>= 6.4.0)")
 
     # アーキテクチャ指定（自動判定も可能）

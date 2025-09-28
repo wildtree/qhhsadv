@@ -173,6 +173,32 @@ endif()
 target_link_libraries(qhhsadv PRIVATE Qt${QT_VERSION_MAJOR}::Widgets Qt${QT_VERSION_MAJOR}::Multimedia)
 
 if(UNIX AND NOT APPLE)
+    # パッケージの基本情報
+    set(CPACK_PACKAGE_NAME "myapp")
+    set(CPACK_PACKAGE_VERSION "1.0.0")
+    set(CPACK_PACKAGE_CONTACT "you@example.com")
+
+    # Debian パッケージ用のメタ情報
+    set(CPACK_GENERATOR "DEB")
+    set(CPACK_DEBIAN_PACKAGE_MAINTAINER "Hiroyuki") # 必須
+    set(CPACK_DEBIAN_PACKAGE_SECTION "utils")
+    set(CPACK_DEBIAN_PACKAGE_DEPENDS "libqt6core6 (>= 6.4.0), libc6 (>= 2.34)")
+
+    # アーキテクチャ指定（自動判定も可能）
+    string(TOLOWER "${CMAKE_SYSTEM_PROCESSOR}" DETECTED_ARCH)
+
+    if(DETECTED_ARCH STREQUAL "x86_64")
+        set(CPACK_DEBIAN_PACKAGE_ARCHITECTURE "amd64")
+    elseif(DETECTED_ARCH STREQUAL "aarch64")
+        set(CPACK_DEBIAN_PACKAGE_ARCHITECTURE "arm64")
+    elseif(DETECTED_ARCH MATCHES "armv7")
+        set(CPACK_DEBIAN_PACKAGE_ARCHITECTURE "armhf")
+    else()
+        set(CPACK_DEBIAN_PACKAGE_ARCHITECTURE "${DETECTED_ARCH}") # fallback
+    endif()
+
+    include(CPack)
+
     # 実行ファイルを /opt/qhhsadv に配置
     install(TARGETS qhhsadv DESTINATION /opt/qhhsadv)
 
@@ -190,8 +216,6 @@ if(UNIX AND NOT APPLE)
     # アイコン（48x48 の例）
     install(FILES ${CMAKE_SOURCE_DIR}/resources/icons/qhhsadv.png
             DESTINATION /usr/share/icons/hicolor/48x48/apps)
-
-elseif(WIN32)
 
 endif()
 

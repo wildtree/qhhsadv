@@ -15,7 +15,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(APP_NAME "qhhsadv")
 set(APP_VERSION_MAJOR "1")
 set(APP_VERSION_MINOR "1")
-set(APP_VERSION_PATCH "0")
+set(APP_VERSION_PATCH "1")
 set(APP_VERSION "${APP_VERSION_MAJOR}.${APP_VERSION_MINOR}.${APP_VERSION_PATCH}")
 
 # QtCreator supports the following variables for Android, which are identical to qmake Android variables.

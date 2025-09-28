@@ -11,6 +11,13 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+# Application basic information
+set(APP_NAME "qhhsadv")
+set(APP_VERSION_MAJOR "1")
+set(APP_VERSION_MINOR "1")
+set(APP_VERSION_PATCH "0")
+set(APP_VERSION "${APP_VERSION_MAJOR}.${APP_VERSION_MINOR}.${APP_VERSION_PATCH}")
+
 # QtCreator supports the following variables for Android, which are identical to qmake Android variables.
 # Check https://doc.qt.io/qt/deployment-android.html for more information.
 # They need to be set before the find_package( ...) calls below.
@@ -130,9 +137,9 @@ if(WIN32)
     add_custom_command(
         TARGET qhhsadv POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_DIR}/installer
-        COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_SOURCE_DIR}/installer/setup.iss ${CMAKE_BINARY_DIR}/installer
         COMMENT "Copying setup.iss..."
     )
+    configure_file(${CMAKE_SOURCE_DIR}/installer/setup.iss.in ${CMAKE_BINARY_DIR}/installer/setup.iss @ONLY)
     # Inno Setup コンパイラを探す
 
     find_program(INNO_SETUP_COMPILER
@@ -174,8 +181,8 @@ target_link_libraries(qhhsadv PRIVATE Qt${QT_VERSION_MAJOR}::Widgets Qt${QT_VERS
 
 if(UNIX AND NOT APPLE)
     # パッケージの基本情報
-    set(CPACK_PACKAGE_NAME "qhhsadv")
-    set(CPACK_PACKAGE_VERSION "1.1.0")
+    set(CPACK_PACKAGE_NAME ${APP_NAME})
+    set(CPACK_PACKAGE_VERSION ${APP_VERSION})
     set(CPACK_PACKAGE_CONTACT "wildtree@gmail.com")
 
     # Debian パッケージ用のメタ情報

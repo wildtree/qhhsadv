@@ -33,11 +33,13 @@ const QString ending_credit = R"(<<center><font size="2"><b>High High School Adv
 <br />
 PalmOS version: hiro © 2002-2004<br />
 Android version: hiro © 2011-2025<br />
+Web version: hiro © 2012-2024<br />
 M5 version: hiro © 2023-2025<br />
 Qt version: hiro © 2024-2025<br />
 PicoCalc version: hiro © 2025<br />
 SDL version: hiro © 2025<br />
 Windows version: hiro © 2025<br />
+AvaloniaUI version: hiro © 2025<br />
 <br />
 <b>- Project ZOBPlus -</b><br />
 Hayami &lt;hayami@zob.jp&gt;<br />
@@ -757,11 +759,13 @@ ZSystem::about()
                            "<p>"
                            "&nbsp;PalmOS version: hiro © 2002-2004<br/>"
                            "&nbsp;Android version: hiro © 2011-2025<br/>"
+                            "&nbsp;Web version: hiro © 2012-2024<br />"
                            "&nbsp;M5 version: hiro © 2023-2024<br/>"
                            "&nbsp;Qt version: hiro © 2024-2025<br/>"
                             "&nbsp;PicoCalc version: hiro © 2025<br />"
                             "&nbsp;SDL version: hiro © 2025<br />"
                             "&nbsp;Windows version: hiro © 2025<br />"
+                            "&nbsp;AvaloniaUI version: hiro © 2025<br />"
                            "</p><p>"
                            "<b>Project ZOBPlus</b><br/>"
                            "&nbsp;Hayami &lt;hayami@zob.jp&gt;<br/>"
